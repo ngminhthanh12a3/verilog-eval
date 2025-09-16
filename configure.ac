@@ -127,6 +127,17 @@ AC_ARG_WITH(top-p,
 AC_SUBST([top_p])
 AC_MSG_NOTICE([using top-p: ${top_p}])
 
+#-------------------------------------------------------------------------
+# --with-base-url 
+#-------------------------------------------------------------------------
+
+AC_ARG_WITH(base-url,
+  AS_HELP_STRING([--with-base-url],[Base URL of model]),
+  [base_url="${with_base_url}"],
+  [base_url=None])
+
+AC_SUBST([base_url])
+AC_MSG_NOTICE([using base-url: ${base_url}])
 
 #-------------------------------------------------------------------------
 # dataset

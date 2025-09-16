@@ -35,6 +35,8 @@ from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_openai import ChatOpenAI
 from langchain.schema   import SystemMessage, HumanMessage
 from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks.manager import get_openai_callback
+from langchain_ollama import ChatOllama
 
 #-------------------------------------------------------------------------
 # Command line processing
@@ -63,6 +65,7 @@ def parse_cmdline():
   p.add_argument( "-x", "--examples",    type=int,   default=0 )
   p.add_argument( "-r", "--rules",       action="store_true" )
   p.add_argument(       "--output",      type=str,   default="-" )
+  p.add_argument(       "--base-url",    type=str,   default=None)
   p.add_argument(       "--task",        type=str,   default="code-complete-iccad2023" )
   p.add_argument( "prompt_filename" )
 
@@ -93,6 +96,13 @@ nim_chat_models = [
   "ai-mistral-7b-instruct-v2",
   "ai-mixtral-8x7b-instruct",
   "ai-mistral-large"
+]
+
+ollama_models = [
+  'codellama:7b',
+  'hf.co/mradermacher/RTLCoder-Deepseek-v1.1-GGUF:Q4_K_M',
+  'hf.co/mradermacher/RTLCoder-v1.1-GGUF:Q4_K_M',
+  'mistral:7b'
 ]
 
 manual_models = [
@@ -224,6 +234,8 @@ def main():
     for model in manual_models:
       print( f" - {model}" )
 
+    for model in ollama_models:
+      print( f" - {model}" )
 
     print( "" )
     print( "Model Aliases" )
@@ -238,7 +250,7 @@ def main():
   if opts.model in model_aliases:
     model = model_aliases[opts.model]
 
-  if model not in openai_models + nim_chat_models + manual_models:
+  if model not in openai_models + nim_chat_models + manual_models + ollama_models:
     print("")
     print(f"ERROR: Unknown model {model}")
     print("")
@@ -268,7 +280,8 @@ def main():
   temperature = opts.temperature
   top_p       = opts.top_p
   max_tokens  = opts.max_tokens
-
+  base_url    = opts.base_url
+  
   out.print( "" )
   out.print( f"problem     = {problem}"     )
   out.print( f"model       = {model}"       )
@@ -369,6 +382,14 @@ def main():
       print( full_prompt.rstrip(), file=output_prompt_file )
     with open( output_prompt_filename + "_systemprompt.txt", 'w' ) as output_prompt_file:
       print( system_msg, file=output_prompt_file )
+  elif model in ollama_models:
+    llm = ChatOllama(
+      model       = model,
+      temperature = temperature,
+      top_p       = top_p,
+      base_url    = base_url,
+      num_predict  = max_tokens,
+    )
   else:
     # should never reach here
     return
@@ -381,7 +402,7 @@ def main():
           break
       except Exception as e:
         print("")
-        print("ERROR: LLM query failed, retrying in 20 seconds")
+        print("ERROR: LLM query failed, retrying in 20 seconds, " + "base_url = " + str(base_url))
         print(f"{type(e)}")
         print(f"{e}")
         print("")
