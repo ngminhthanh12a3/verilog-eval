@@ -48,7 +48,7 @@ $ git clone https://github.com/steveicarus/iverilog.git && cd iverilog \
 You will also need the following Python packages:
 
 ```
- % pip install langchain langchain-openai langchain-nvidia-ai-endpoints
+ % pip install langchain langchain-openai langchain-nvidia-ai-endpoints langchain_community langchain_ollama
 ```
 
 We plan to provide a Dockerfile and backwards compatibility mode with a prebuilt jsonl soon.

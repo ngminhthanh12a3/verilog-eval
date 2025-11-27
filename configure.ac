@@ -140,6 +140,18 @@ AC_SUBST([base_url])
 AC_MSG_NOTICE([using base-url: ${base_url}])
 
 #-------------------------------------------------------------------------
+# --with-model-manual 
+#-------------------------------------------------------------------------
+
+AC_ARG_WITH(model-manual,
+  AS_HELP_STRING([--with-model-manual],[Base URL of model]),
+  [model_manual="${with_model_manual}"],
+  [model_manual=False])
+
+AC_SUBST([model_manual])
+AC_MSG_NOTICE([using model-manual: ${model_manual}])
+
+#-------------------------------------------------------------------------
 # dataset
 #-------------------------------------------------------------------------
 

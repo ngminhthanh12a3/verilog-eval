@@ -30,6 +30,7 @@ import re
 import time
 from collections import namedtuple
 
+print(os.getcwd())
 
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_openai import ChatOpenAI
@@ -66,6 +67,7 @@ def parse_cmdline():
   p.add_argument( "-r", "--rules",       action="store_true" )
   p.add_argument(       "--output",      type=str,   default="-" )
   p.add_argument(       "--base-url",    type=str,   default=None)
+  p.add_argument(       "--model-manual",	type=bool,   default=False)
   p.add_argument(       "--task",        type=str,   default="code-complete-iccad2023" )
   p.add_argument( "prompt_filename" )
 
@@ -102,13 +104,18 @@ ollama_models = [
   'codellama:7b',
   'hf.co/mradermacher/RTLCoder-Deepseek-v1.1-GGUF:Q4_K_M',
   'hf.co/mradermacher/RTLCoder-v1.1-GGUF:Q4_K_M',
-  'mistral:7b'
+  'mistral:7b',
+  'codellama:7b-instruct',
+  'mistral:instruct',
 ]
 
 manual_models = [
   'manual-rtl-coder',
   'manual-deepseek-coder-6.7b',
-  'manual-deepseek-coder-33b'
+  'manual-deepseek-coder-33b',
+  'manual-codellama:7b-instruct',
+  'nvmthanhhcmus/MIHA-DeepSeek-Coder-Pyranet-GGUF',
+  'nvmthanhhcmus/MIHA-DeepSeek-Coder-Pyranet-Chat-VLLM'
 ]
 
 model_aliases = {
@@ -152,6 +159,9 @@ prompts['code-complete-iccad2023'] = {
   'system_msg' : """
 You only complete chats with syntax correct Verilog code. End the Verilog module code completion with 'endmodule'. Do not include module, input and output definitions.
 """,
+# 'system_msg' : """
+# You only complete chats with syntax correct Verilog code in the tags <code></code>.
+# """,
   'prompt_prefix' : """
 // Implement the Verilog module based on the following description. Assume that signals are positive clock/clk triggered unless otherwise stated.
 """
@@ -212,7 +222,9 @@ and do NOT output anything else.
 def main():
 
   opts = parse_cmdline()
-
+  if opts.model_manual:
+    print("Auto append manual model: ", opts.model)
+    manual_models.append(opts.model)
   # Check models
 
   if opts.list_models:
@@ -357,7 +369,7 @@ def main():
   print( "", file=file )
 
   # Create LLM messages
-
+#   print("full_prompt: ", full_prompt)
   msgs = [ SystemMessage(system_msg), HumanMessage(full_prompt) ]
 
   # Query the LLM

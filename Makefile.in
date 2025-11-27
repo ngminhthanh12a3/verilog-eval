@@ -56,6 +56,11 @@ ifneq ($(base_url),None)
   GENERATE_FLAGS += "--base-url=@base_url@"
 endif
 
+model_manual=@model_manual@
+ifneq ($(model_manual),False)
+  GENERATE_FLAGS += "--model-manual=@model_manual@"
+endif
+
 IVERILOG_COMPILE=@IVERILOG@ -Wall -Winfloop -Wno-timescale -g2012 -s tb
 
 #-------------------------------------------------------------------------
