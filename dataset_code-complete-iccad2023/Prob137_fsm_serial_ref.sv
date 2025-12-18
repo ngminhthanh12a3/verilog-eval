@@ -24,6 +24,7 @@ module RefModule (
       STOP: next = in ? DONE : ERR;  // stop bit is 1. Idle state is 1.
       DONE: next = in ? START : B0;
       ERR: next = in ? START : ERR;
+	  default: next = 0;
     endcase
   end
 

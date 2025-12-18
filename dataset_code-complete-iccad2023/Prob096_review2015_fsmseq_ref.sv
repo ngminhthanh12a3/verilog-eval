@@ -17,6 +17,7 @@ module RefModule (
       S11: next = data ? S11 : S110;
       S110: next = data ? Done : S;
       Done: next = Done;
+	  default: next = 0;
     endcase
   end
 

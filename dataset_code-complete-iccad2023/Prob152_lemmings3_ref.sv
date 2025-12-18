@@ -31,6 +31,7 @@ module RefModule (
       FALLR: next = ground ? WR : FALLR;
       DIGL: next = ground ? DIGL : FALLL;
       DIGR: next = ground ? DIGR : FALLR;
+	  default: next = 0;
     endcase
   end
 

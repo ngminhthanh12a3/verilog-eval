@@ -16,6 +16,7 @@ module RefModule (
       B2: next = B3;
       B3: next = Done;
       Done: next = Done;
+	  default: next = 0;
     endcase
   end
 
